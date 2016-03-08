@@ -42,60 +42,47 @@
 			<div class="slides">
 				<section>
 					<h1>Easybuild and Docker</h1>
-					<h3>Building binary packages quickly and cleanly</h3>
+					<h3> and Nix and Conda</h3>
+					<h4>Looking at the state of the art</h4>
 					<p>
 						Robert Schmidt|roschmidt@toh.ca
 					</p>
 					<img width="400px" style="bottom: 0; left: 0; border: none; background: none;" data-src="./images/TOH.png"/>
 					<br/><img width="400px" style="bottom: 0; right:0;border: none; background: none;" data-src="./images/uOttawaAffil.png"/>
 				</section>
-
+				<section>
+					<h1>Follow along</h1>
+					<ul><li><a href="http://eb.ayr.ca/pres">http://eb.ayr.ca/pres</a></li>
+					<li><a target="_blank" href="https://tmate.io/t/ro-J5q90MBR6o4jzzSPBEKVEii3L">https://tmate.io/t/ro-J5q90MBR6o4jzzSPBEKVEii3L</a></li>
+				</ul>
+				</section>
 				<section>
 					<h2>Who am I?</h2>
 					<ul>
-						<li>Worked at SHARCNET until 2007</li>
-						<li>Contributor to EasyBuild</li>
-						<li>SysAdmin/Software Support for a bioinformatics group in a stem cell research program</li>
+						<li>Worked at bigger Canadian HPC sites until 2007</li>
+						<li>Contributed fpm packaging feature to EasyBuild</li>
+						<li>SysAdmin/Software Support for a bioinformatics group</li>
 					</ul>
 					<p class="fragment"><img width="400px" data-src="./images/bike.jpg"/><br/>
-					I'm also crazy and bike to work in the winter <span class="fragment">... in Ottawa</span></p>
+					I'm also crazy and bike to work in the winter <span class="fragment">... in Canada</span></p>
 				</section>
 				<section>
 					<h2>What I hope to cover</h2>
 					<p>
 						<ul>
-							<li class="fragment">EasyBuild highlights</li>
-							<li class="fragment">Docker</li>
-							<li class="fragment">Getting started</li>
+							<li class="fragment">Cover some major aspects of Docker</li>
+							<li class="fragment">EasyBuild packaging in Docker</li>
+							<li class="fragment">Namespaces and Nix with EasyBuild</li>
+							<li class="fragment">Conda and EasyBuild</li>
+							<li class="fragment">RPATH in Nix, Conda and perhaps Spack</li>
 						</ul>
 					</p>
-				</section>
-
-				<section id="why-easybuild">
-					<h2>What can EasyBuild do?</h2>
-					<p>
-						<a href="https://hpcugent.github.io/easybuild/">EasyBuild</a> is the product of an active community
-						of HPC specialists world-wide.
-					</p>
-					<ul>
-						<li class="fragment">Strict version resolution means easier community support</li>
-						<li class="fragment">Can take fairly simple configs and turn them into built software</li>
-						<li class="fragment">New version will make that even easier using YAML</li>
-						<li class="fragment">Testing framework and good coverage</li>
-						<li class="fragment">Future development includes support for rpath</li>
-					</ul>
-
-					<aside class="notes">
-						User meetings
-						Support
-						github
-					</aside>
 				</section>
 
 				<section id="why-docker">
 					<h2>Why Docker?</h2>
 						<ul>
-							<li class="fragment">Isolation
+							<li class="fragment">Isolation</li>
 								<ul>
 									<li class="fragment">Runs in a separate process namespace, but lighter than a VM </li>
 								</ul>
@@ -109,6 +96,13 @@
 
 						</ul>
 					</p>
+				</section>
+				<section>
+					<h2>Uncomfortable questions about RPATH</h2>
+					<ul>
+						<li class="fragment">Can we make running software more predictable?</li>
+						<ul><li class="fragment">Modulefiles would be reduced to setting PATH?</li>
+							<li class="fragment">No more replacing zlib with a faster version (without recompile or patchelf)?</li>
 				</section>
 				<section>
 					<section>
@@ -184,13 +178,13 @@ easy_build: error: invalid choice: 'help' (choose from 'build', 'yumrepo')
 
 [nisrob@maraba eb-devel-install]$ docker-compose run BuildToolchain build foss-2015a foss-2015b
 
+calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '--download-timeout=60', '--prefix=/software/easybuild', '--packagepath=/repos/foss-2015a', 'foss-2015a.eb', '--robot']
 == temporary log file in case of crash /tmp/eb-VF8Idh/easybuild-rKb3Oe.log
 == FPM/1.3.3-Ruby-2.1.6 is already installed (module found), skipping
 == No easyconfigs left to be built.
 == Build succeeded for 0 out of 0
 == Temporary log file(s) /tmp/eb-VF8Idh/easybuild-rKb3Oe.log* have been removed.
 == Temporary directory /tmp/eb-VF8Idh has been removed.
-calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '--download-timeout=60', '--prefix=/software/easybuild', '--packagepath=/repos/foss-2015a', 'foss-2015a.eb', '--robot']
 == temporary log file in case of crash /tmp/eb-gJ2eZa/easybuild-NdTeem.log
 == resolving dependencies ...
 == processing EasyBuild easyconfig /software/easybuild-develop/easybuild-easyconfigs/easybuild/easyconfigs/g/GCC/GCC-4.9.2.eb
@@ -206,7 +200,9 @@ calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '-
 					</section>
 				</section>
 				<section >
-					<iframe class="stretch" data-src="http://tecc-demo.ottbioinfo.ca/"></iframe>
+					<h2>Demo window</h2>
+					<p>The following will open in a new tab or window</p>
+					<p><a href="https://tmate.io/t/ro-J5q90MBR6o4jzzSPBEKVEii3L" target="_blank">tmate.io read-only session</a></p>
 				</section>
 			</div>
 
@@ -224,7 +220,7 @@ calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '-
 				progress: true,
 				history: true,
 				center: true,
-				parallaxBackgroundImage: 'https://raw.githubusercontent.com/rjeschmi/reveal.js/eb-docker-tecc-2016-toronto/parl_winter_blur.jpg',
+				parallaxBackgroundImage: './images/servers.jpg',
 				parallaxBackgroundSize: '1905px 900px',
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 
