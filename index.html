@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Quick overview of EasyBuild and Docker</title>
+		<title>A stroll through the some related tech</title>
 
 		<meta name="description" content="Using Docker to simplify clean builds for testing and package deployment">
 		<meta name="author" content="Robert Schmidt">
@@ -41,162 +41,116 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Easybuild and Docker</h1>
-					<h3> and Nix and Conda</h3>
-					<h4>Looking at the state of the art</h4>
+					<h3>A stroll through the garden
+					of software curiosities</h3>
+          <h4 class="fragment">for people with short attention spans</h4>
 					<p>
 						Robert Schmidt|roschmidt@toh.ca
 					</p>
-					<img width="400px" style="bottom: 0; left: 0; border: none; background: none;" data-src="./images/TOH.png"/>
-					<br/><img width="400px" style="bottom: 0; right:0;border: none; background: none;" data-src="./images/uOttawaAffil.png"/>
+          <div class="footer">
+					       <img width="400px" style="vertical-align: top; bottom: 0; left: 0; border: none; background: none; filter: drop-shadow(0px 0px 1px #000) drop-shadow(3px 3px 3px #000);" data-src="./images/TOH.png"/>
+					       <img width="400px" style="vertical-align: top; bottom: 0; right:0;border: none; background: none; filter: drop-shadow(0px 0px 1px #000) drop-shadow(3px 3px 3px #000) brightness(150%)" data-src="./images/uOttawaAffil.png"/>
+                    </div>
 				</section>
 				<section>
-					<h1>Follow along</h1>
-					<ul><li><a href="http://eb.ayr.ca/pres">http://eb.ayr.ca/pres</a></li>
-					<li><a target="_blank" href="https://tmate.io/t/ro-J5q90MBR6o4jzzSPBEKVEii3L">https://tmate.io/t/ro-J5q90MBR6o4jzzSPBEKVEii3L</a></li>
-				</ul>
-				</section>
-				<section>
-					<h2>Who am I?</h2>
+					<h3>Dealing with the reasonable user</h1>
 					<ul>
-						<li>Worked at bigger Canadian HPC sites until 2007</li>
-						<li>Contributed fpm packaging feature to EasyBuild</li>
-						<li>SysAdmin/Software Support for a bioinformatics group</li>
-					</ul>
-					<p class="fragment"><img width="400px" data-src="./images/bike.jpg"/><br/>
-					I'm also crazy and bike to work in the winter <span class="fragment">... in Canada</span></p>
+            <li class="fragment">I want to run this thing from the web that I saw in some journal</li>
+            <li class="fragment">It has these bunch of dependencies</li>
+            <li class="fragment">None are satisfied by the OS (or we don't want them to be)</li>
+          </ul>
 				</section>
 				<section>
-					<h2>What I hope to cover</h2>
+					<h3>Important variables for a "user"</h3>
+					<ul>
+						<li>Non-builder user:</li>
+              <ul>
+                <li>PATH, MANPATH</li>
+						    <li>LD_LIBRARY_PATH</li>
+                <li>language-specific locations for libraries (PYTHONPATH, PERL5LIB, )</li>
+              </ul>
+              <li>Devloper user:</li>
+              <ul>
+                <li>CPATH, LIBRARY_PATH</li>
+
+					</ul>
+				</section>
+				<section>
+					<h3>Why this isn't easy</h3>
 					<p>
 						<ul>
-							<li class="fragment">Cover some major aspects of Docker</li>
-							<li class="fragment">EasyBuild packaging in Docker</li>
-							<li class="fragment">Namespaces and Nix with EasyBuild</li>
-							<li class="fragment">Conda and EasyBuild</li>
+							<li class="fragment">Building is slow</li>
+							<li class="fragment">users are </li>
 							<li class="fragment">RPATH in Nix, Conda and perhaps Spack</li>
 						</ul>
 					</p>
 				</section>
 
-				<section id="why-docker">
-					<h2>Why Docker?</h2>
-						<ul>
-							<li class="fragment">Isolation</li>
-								<ul>
-									<li class="fragment">Runs in a separate process namespace, but lighter than a VM </li>
-								</ul>
-							</li>
-							<li class="fragment">Clean
-								<ul>
-									<li class="fragment">Like chroot, active community, lots of software</li>
-								</ul>
-							</li>
-							<li class="fragment">Already in use in environment</li>
-
-						</ul>
-					</p>
+				<section id="conda-relocation">
+					<h3>The conda way</h3>
+          <ul>
+            <li class="fragment">conda supports relocation, this allows binaries to be moved to different user directories</li>
+          <li class="fragment">I often use conda provides a reasonable core python for use with easybuild</li>
+          <li class="fragment">conda could be used to provide os dependencies</li>
+        </ul>
 				</section>
+        <section>
+          <h3>Other things about conda</h3>
+          <ul><li class="fragment">Conda supports enviroments and sets a pretty path</li>
+            <li>sets just a few variables PATH, CONDA_PATH and backups</li></ul>
+<pre >
+(root) [rob@ottbioinfo bin]$ ldd `which python`
+linux-vdso.so.1 =>  (0x00007ffee1fe1000)
+libpython2.7.so.1.0 => /home/rob/miniconda2/bin/../lib/libpython2.7.so.1.0 (0x00007f355f7d9000)
+libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f355f5b4000)
+libdl.so.2 => /lib64/libdl.so.2 (0x00007f355f3b0000)
+libutil.so.1 => /lib64/libutil.so.1 (0x00007f355f1ad000)
+libm.so.6 => /lib64/libm.so.6 (0x00007f355eeaa000)
+libc.so.6 => /lib64/libc.so.6 (0x00007f355eae9000)
+/lib64/ld-linux-x86-64.so.2 (0x00007f355fbd4000)
+</pre>
+        </section >
+        <section>
+          <h3>Conda dynamic elf headers</h3>
+<pre>
+  Dynamic section at offset 0x8e0 contains 26 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libpython2.7.so.1.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libutil.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x000000000000000f (RPATH)              Library rpath: [$ORIGIN/../lib]
+ </pre>
+ </section>
 				<section>
-					<h2>Uncomfortable questions about RPATH</h2>
+					<h2>The nix way</h2>
 					<ul>
-						<li class="fragment">Can we make running software more predictable?</li>
-						<ul><li class="fragment">Modulefiles would be reduced to setting PATH?</li>
-							<li class="fragment">No more replacing zlib with a faster version (without recompile or patchelf)?</li>
+						<li class="fragment">Nix prefers to install things in a static prefix
+              using /nix/store allows you to install binaries
+              since the derivation is hashed and added to the prefix, binaries names are able to be predicted
+              and rebuilt and shared for a given set of other machines
+
+              nix has some very powerful features including creating a container
 				</section>
-				<section>
 					<section>
-						<h2>Some examples</h2>
-						<pre><code data-trim data-noescape>
-[easybuild@a68d53641587 ~]$ <mark>eb bzip2-1.0.6.eb --package</mark>
-== temporary log file in case of crash /tmp/eb-fZ7Q26/easybuild-9n1eil.log
-== processing EasyBuild easyconfig /software/easybuild-develop/easybuild-easyconfigs/easybuild/easyconfigs/b/bzip2/bzip2-1.0.6.eb
-== building and installing bzip2/1.0.6...
-== fetching files...
-== creating build dir, resetting environment...
-== unpacking...
-== patching...
-== preparing...
-== configuring...
-== building...
-== testing...
-== installing...
-== taking care of extensions...
-== postprocessing...
-== sanity checking...
-== cleaning up...
-== creating module...
-== permissions...
-== packaging...
-== COMPLETED: Installation ended successfully
-== Results of the build can be found in the log file /software/easybuild/software/bzip2/1.0.6/easybuild/easybuild-bzip2-1.0.6-20160119.180510.log
-== Build succeeded for 1 out of 1
-== Temporary log file(s) /tmp/eb-fZ7Q26/easybuild-9n1eil.log* have been removed.
-== Temporary directory /tmp/eb-fZ7Q26 has been removed.
-					</code></pre>
-					</section>
-					<section>
-						<pre><code>
-[root@a68d53641587 build]# cd /software/easybuild/packages/
-[root@a68d53641587 packages]# ls -ltra
-total 492
--rw-rw-r-- 1 easybuild easybuild 494099 Jan 19 18:05 bzip2-1.0.6-eb_2.6.0.dev0-1.x86_64.rpm
-drwxr-xr-x 8 easybuild easybuild   4096 Jan 19 18:05 ..
-drwxrwxr-x 2 easybuild easybuild   4096 Jan 19 18:05 .
-[root@a68d53641587 packages]# rpm -qlp bzip2-1.0.6-eb_2.6.0.dev0-1.x86_64.rpm
-/software/easybuild/modules/all/bzip2/1.0.6
-/software/easybuild/software/bzip2/1.0.6/bin/bunzip2
-/software/easybuild/software/bzip2/1.0.6/bin/bzcat
-/software/easybuild/software/bzip2/1.0.6/bin/bzcmp
-/software/easybuild/software/bzip2/1.0.6/bin/bzdiff
-/software/easybuild/software/bzip2/1.0.6/bin/bzegrep
-/software/easybuild/software/bzip2/1.0.6/bin/bzfgrep
-/software/easybuild/software/bzip2/1.0.6/bin/bzgrep
-/software/easybuild/software/bzip2/1.0.6/bin/bzip2
-/software/easybuild/software/bzip2/1.0.6/bin/bzip2recover
-/software/easybuild/software/bzip2/1.0.6/bin/bzless
-/software/easybuild/software/bzip2/1.0.6/bin/bzmore
-/software/easybuild/software/bzip2/1.0.6/easybuild/bzip2-1.0.6-easybuild-devel
-/software/easybuild/software/bzip2/1.0.6/include/bzlib.h
-/software/easybuild/software/bzip2/1.0.6/lib/libbz2.a
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzcmp.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzdiff.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzegrep.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzfgrep.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzgrep.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzip2.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzless.1
-/software/easybuild/software/bzip2/1.0.6/man/man1/bzmore.1
-						</code></pre>
+						<h3>Some examples</h3>
+						Treds that we start to see.
+
+            Relocation support in some way is a good thing
+            binary installs might play a role in
+            How do we support insatlling in different machines where they might not be the same filesystem or paths
 
 					</section>
 					<section>
-<pre><code>
-rob@ogic:~/syncthing/eb-devel-install$ docker-compose run BuildToolchain help
-usage: easy_build [-h] {build,yumrepo} ...
-easy_build: error: invalid choice: 'help' (choose from 'build', 'yumrepo')
+						mpeb example
+            next steps
+            server
+            singularity
+					</section>
+					<section>
 
-[nisrob@maraba eb-devel-install]$ docker-compose run BuildToolchain build foss-2015a foss-2015b
-
-calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '--download-timeout=60', '--prefix=/software/easybuild', '--packagepath=/repos/foss-2015a', 'foss-2015a.eb', '--robot']
-== temporary log file in case of crash /tmp/eb-VF8Idh/easybuild-rKb3Oe.log
-== FPM/1.3.3-Ruby-2.1.6 is already installed (module found), skipping
-== No easyconfigs left to be built.
-== Build succeeded for 0 out of 0
-== Temporary log file(s) /tmp/eb-VF8Idh/easybuild-rKb3Oe.log* have been removed.
-== Temporary directory /tmp/eb-VF8Idh has been removed.
-== temporary log file in case of crash /tmp/eb-gJ2eZa/easybuild-NdTeem.log
-== resolving dependencies ...
-== processing EasyBuild easyconfig /software/easybuild-develop/easybuild-easyconfigs/easybuild/easyconfigs/g/GCC/GCC-4.9.2.eb
-== building and installing GCC/4.9.2...
-== fetching files...
-== creating build dir, resetting environment...
-== unpacking...
-
-...
-
-
-</code></pre>
 					</section>
 				</section>
 				<section >
@@ -220,8 +174,8 @@ calling eb with args: ['--package', '--sourcepath=/export/easybuild/sources', '-
 				progress: true,
 				history: true,
 				center: true,
-				parallaxBackgroundImage: './images/servers.jpg',
-				parallaxBackgroundSize: '1905px 900px',
+				parallaxBackgroundImage: './images/skating.jpg',
+				parallaxBackgroundSize: '1900px 1200px',
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 
 				// Optional reveal.js plugins
